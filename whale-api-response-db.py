@@ -210,7 +210,8 @@ class AlertClass:
 ###
 class RegisterDBClass:
     def __init__(self):
-        self.DATABASES_URL = os.environ['DATABASE_URL']
+        # self.DATABASES_URL = os.environ['DATABASE_URL']
+        pass
 
     def db_register(self, timestamp, amount, price, move):
         # with psycopg2.connect(self.DATABASES_URL) as conn:
