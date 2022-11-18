@@ -60,6 +60,7 @@ def main():
 
             case _:
                 print('不明なエラー jsonが取得できませんでした')
+                print(whale_api_response)
                 error_flg = 0
                 # whale_api_response = api.return_whale_api(unix_timestamp)
 
