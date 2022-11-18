@@ -3,11 +3,11 @@ import datetime
 import math
 import requests
 import os
-# from dotenv import load_dotenv
+from dotenv import load_dotenv
 # import psycopg2
 
 # api_key, db_urlの読み込み
-# load_dotenv()
+load_dotenv()
 
 
 ### メイン処理
