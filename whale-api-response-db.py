@@ -4,7 +4,7 @@ import math
 import requests
 import os
 from dotenv import load_dotenv
-# import psycopg2
+import psycopg2
 
 # api_key, db_urlの読み込み
 load_dotenv()
@@ -212,14 +212,14 @@ class AlertClass:
 ###
 class RegisterDBClass:
     def __init__(self):
-        # self.DATABASES_URL = os.environ['DATABASE_URL']
+        self.DATABASES_URL = os.environ['DATABASE_URL']
         pass
 
     def db_register(self, timestamp, amount, price, move):
-        # with psycopg2.connect(self.DATABASES_URL) as conn:
-        #     with conn.cursor() as curs:
-        #         curs.execute(
-        #             "INSERT INTO whale(timestamp,amount,price,move) VALUES(timezone('JST' ,%s), %s, %s, %s)", (timestamp, amount, price, move))
+        with psycopg2.connect(self.DATABASES_URL) as conn:
+            with conn.cursor() as curs:
+                curs.execute(
+                    "INSERT INTO whale(timestamp,amount,price,move) VALUES(timezone('JST' ,%s), %s, %s, %s)", (timestamp, amount, price, move))
 
         print('db登録しました ' + move)
 
