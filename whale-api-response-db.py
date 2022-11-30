@@ -222,7 +222,8 @@ class RegisterDBClass:
 
     def db_register(self, timestamp, amount, price, move):
         # with psycopg2.connect(self.DATABASES_URL) as conn:
-        with psycopg2.connect(user=self.USER,password=self.PASSWORD,host=self.HOST,port=self.PORT,database=self.DATABASE) as conn:
+        # with psycopg2.connect(user=self.USER,password=self.PASSWORD,host=self.HOST,port=self.PORT,database=self.DATABASE) as conn:
+        with psycopg2.connect('postgresql://%s:%s@%s:%s/%s', (self.USER, self.PASSWORD, self.HOST, self.PORT, self.DATABASE)) as conn:
             with conn.cursor() as curs:
                 curs.execute(
                     "INSERT INTO whale(timestamp,amount,price,move) VALUES(timezone('JST' ,%s), %s, %s, %s)", (timestamp, amount, price, move))
