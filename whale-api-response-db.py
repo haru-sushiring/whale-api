@@ -212,13 +212,13 @@ class AlertClass:
 ###
 class RegisterDBClass:
     def __init__(self):
-        # self.DATABASES_URL = os.environ['DATABASE_URL']
-        # self.USER = os.environ['USER']
-        # self.PASSWORD = os.environ['PASSWORD']
-        # self.HOST = os.environ['HOST']
-        # self.PORT = os.environ['PORT']
-        # self.DATABASE = os.environ['DATABASE']
-        # self.postgresql = 'postgresql://' + self.USER + ':' + self.PASSWORD + '@' + self.HOST + ':' + self.PORT + '/' + self.DATABASE
+        self.DATABASES_URL = os.environ['DATABASE_URL']
+        self.USER = os.environ['USER']
+        self.PASSWORD = os.environ['PASSWORD']
+        self.HOST = os.environ['HOST']
+        self.PORT = os.environ['PORT']
+        self.DATABASE = os.environ['DATABASE']
+        self.postgresql = 'postgresql://' + self.USER + ':' + self.PASSWORD + '@' + self.HOST + ':' + self.PORT + '/' + self.DATABASE
         pass
 
     def db_register(self, timestamp, amount, price, move):
