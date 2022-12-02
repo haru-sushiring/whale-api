@@ -212,14 +212,14 @@ class AlertClass:
 ###
 class RegisterDBClass:
     def __init__(self):
-        self.DATABASES_URL = os.environ['DATABASE_URL']
+        # self.DATABASES_URL = os.environ['DATABASE_URL']
         self.USER = os.environ['USER']
         self.PASSWORD = os.environ['PASSWORD']
         self.HOST = os.environ['HOST']
         self.PORT = os.environ['PORT']
         self.DATABASE = os.environ['DATABASE']
         self.postgresql = 'postgresql://' + self.USER + ':' + self.PASSWORD + '@' + self.HOST + ':' + self.PORT + '/' + self.DATABASE
-        pass
+        # pass
 
     def db_register(self, timestamp, amount, price, move):
         # with psycopg2.connect(self.DATABASES_URL) as conn:
