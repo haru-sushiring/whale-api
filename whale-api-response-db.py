@@ -19,7 +19,7 @@ def main():
     tsc = TimeStampClass()
     rdbc = RegisterDBClass()
 
-    unix_timestamp = '1669962093'
+    unix_timestamp = '1669965730'
     # unix_timestamp = tsc.new_time_stamp()
     tsc.register_time_stamp(unix_timestamp)
     print(unix_timestamp)
@@ -227,7 +227,7 @@ class RegisterDBClass:
         with psycopg2.connect(self.postgresql) as conn:
             with conn.cursor() as curs:
                 curs.execute(
-                    "INSERT INTO whale(timestamp,amount,price,move) VALUES(timezone('JST' ,%s), %s, %s, %s)", (timestamp, amount, price, move))
+                    "INSERT INTO whale_table(timestamp,amount,price,move) VALUES(timezone('JST' ,%s), %s, %s, %s)", (timestamp, amount, price, move))
 
         print('db登録しました ' + move)
 
