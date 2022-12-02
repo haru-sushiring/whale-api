@@ -219,7 +219,7 @@ class RegisterDBClass:
         # self.PORT = os.environ['PORT']
         # self.DATABASE = os.environ['DATABASE']
         # self.postgresql = 'postgresql://' + self.USER + ':' + self.PASSWORD + '@' + self.HOST + ':' + self.PORT + '/' + self.DATABASE
-        # pass
+        pass
 
     def db_register(self, timestamp, amount, price, move):
         # with psycopg2.connect(self.DATABASES_URL) as conn:
