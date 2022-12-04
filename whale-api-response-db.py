@@ -19,8 +19,8 @@ def main():
     tsc = TimeStampClass()
     rdbc = RegisterDBClass()
 
-    unix_timestamp = '1669965730'
-    # unix_timestamp = tsc.new_time_stamp()
+    # unix_timestamp = '1669965730'
+    unix_timestamp = tsc.new_time_stamp()
     tsc.register_time_stamp(unix_timestamp)
     print(unix_timestamp)
 
@@ -30,8 +30,9 @@ def main():
     #
 
     # t_end = time.time() + 60 * 60*24
-    t_end = time.time() + 60 * 60*2
-    while time.time() < t_end:
+    # t_end = time.time() + 60 * 60*2
+    # while time.time() < t_end:
+    while:
 
       unix_timestamp = tsc.return_old_time_stamp()
       print('古いタイムスタンプを利用 : ' + str(unix_timestamp))
