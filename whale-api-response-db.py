@@ -165,12 +165,12 @@ class APIClass:
                     error_flg = 0
 
                 case 500 | 503:
-                    print('500 503 error')
+                    # print('500 503 error')
                     time.sleep(10)
                     response = requests.get(api_url)
 
                 case _:
-                    print('500 503 以外のerror')
+                    # print('500 503 以外のerror')
                     error_flg = 0
 
         return response
@@ -184,18 +184,18 @@ class APIClass:
         while (error_flg == 1):
             match response.status_code:
                 case 200:
-                    print('btc-jpy success')
+                    # print('btc-jpy success')
 
                     print('現在の価格' + str(response.json()['ltp']))
                     error_flg = 0
 
                 case 500 | 503:
-                    print('500 503 error')
+                    # print('500 503 error')
                     time.sleep(10)
                     response = requests.get(api_url)
 
                 case 400 | 401 | 403 | 404 | 408:
-                    print('400系 error')
+                    # print('400系 error')
                     time.sleep(15)
                     response = requests.get(api_url)
                 case _:
@@ -256,7 +256,6 @@ def send_line_notify():
 
 ###
 if __name__ == '__main__':
-    send_line_notify()
     main()
     # エラーが起きたら、LINEに通知する
-    # send_line_notify()
+    send_line_notify()
