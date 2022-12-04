@@ -32,7 +32,8 @@ def main():
     # t_end = time.time() + 60 * 60*24
     # t_end = time.time() + 60 * 60*2
     # while time.time() < t_end:
-    while:
+    forever_flg == 0 # 無限ループ
+    while (forever_flg == 0):
 
       unix_timestamp = tsc.return_old_time_stamp()
       print('古いタイムスタンプを利用 : ' + str(unix_timestamp))
