@@ -53,7 +53,7 @@ def main():
                 whale_api_response = api.return_whale_api(unix_timestamp)
 
             case {"result": 'success', "count": count} if count == 0:
-                print('count : 0')
+                # print('count : 0')
                 whale_api_response = api.return_whale_api(unix_timestamp)
 
             case {"result": 'success', "count": count} if count > 0:
@@ -118,6 +118,9 @@ def main():
         if (transaction == transactions_list[-1]):
             rdbc.set_db(timestamp, btc_jpy_price, sum_buy_btc_amount, sum_sell_btc_amount)
             break
+
+
+### メイン処理　end
 
 
 ###
@@ -201,6 +204,7 @@ class APIClass:
         return response.json()['ltp']
 
 
+
 ###
 class AlertClass:
   def buy_alert(self, btc_amount):
@@ -238,6 +242,21 @@ class RegisterDBClass:
         self.db_register(timestamp, sum_sell_btc_amount, btc_jpy_price, 'sell')
 
 
+
+###
+def send_line_notify():
+    line_notify_token = os.environ['LINE']
+    notification_message = 'whale-api-response-db.py Error'
+    line_notify_api = 'https://notify-api.line.me/api/notify'
+    headers = {'Authorization': f'Bearer {line_notify_token}'}
+    data = {'message': f'message: {notification_message}'}
+    requests.post(line_notify_api, headers = headers, data = data)
+
+
+
 ###
 if __name__ == '__main__':
+    send_line_notify()
     main()
+    # エラーが起きたら、LINEに通知する
+    # send_line_notify()
