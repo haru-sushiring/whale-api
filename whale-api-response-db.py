@@ -76,9 +76,11 @@ def main():
                     if (sum_buy_btc_amount > 0 or sum_sell_btc_amount > 0):
                         # BTC移動の合計量とBTC価格をdbに登録する
                         rdbc.set_db(timestamp, btc_jpy_price, sum_buy_btc_amount, sum_sell_btc_amount)
-                        tx_flg = 0 #break
+                        tx_flg = 0
+                        break
                     else:
-                        tx_flg = 0 #break
+                        tx_flg = 0
+                        break
 
 
                 btc_id = transaction['id']
