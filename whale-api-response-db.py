@@ -28,6 +28,7 @@ def main():
 
         # whale Alert からトランザクション（json）を取得
         whale_api_response = api.return_whale_api(unix_timestamp)
+        print(whale_api_response)
 
         # トランザクションの有無フラグ
         tx_flg = api.whale_api_error_check(whale_api_response)
