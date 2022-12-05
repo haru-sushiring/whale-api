@@ -179,6 +179,7 @@ class APIClass:
                 print(whale_api_response.json())
                 tx_flg = 0
 
+        print(tx_flg)
         return tx_flg
 
 
