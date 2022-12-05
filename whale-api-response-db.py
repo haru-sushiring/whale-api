@@ -151,7 +151,7 @@ class APIClass:
 
         return response
 
-    def whale_api_error_check(whale_api_response):
+    def whale_api_error_check(self, whale_api_response):
         tx_flg = 0
         print(tx_flg)
         print(whale_api_response)
