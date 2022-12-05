@@ -21,17 +21,18 @@ def main():
         rdbc = RegisterDBClass()
 
         # unix_timestamp = '1669965730'
-        unix_timestamp = tsc.new_time_stamp()
+        # unix_timestamp = tsc.new_time_stamp()
+        unix_timestamp = os.environ['TIMESTAMP']
         tsc.register_time_stamp(unix_timestamp)
         print(unix_timestamp)
 
-        # whale Alert json取得
+        # whale Alert からトランザクション（json）を取得
         whale_api_response = api.return_whale_api(unix_timestamp)
 
         # トランザクションの有無フラグ
         tx_flg = api.whale_api_error_check(whale_api_response)
 
-        # トランザクションがある時に処理を行う
+        # トランザクションがある時に処理を行う。
         timestamp_differ_flg = 0
         while (tx_flg == 1):
             # 違うタイムスタンプの時、1つ前のタイムスタンプを利用してトランザクションを再取得する
@@ -68,6 +69,8 @@ def main():
                     #1つ前のタイムスタンプを利用して新しいjsonデータを取得するために、関数に登録しておく
                     tsc.register_time_stamp(old_time_stamp)
                     timestamp_differ_flg = 1
+                    # 環境変数に1つ前のタイムスタンプを登録する
+                    os.environ['TIMESTAMP'] = str(tsc.return_old_time_stamp())
 
                     if (sum_buy_btc_amount > 0 or sum_sell_btc_amount > 0):
                         # BTC移動の合計量とBTC価格をdbに登録する
@@ -96,6 +99,8 @@ def main():
                 if (transaction == transactions_list[-1]):
                     rdbc.set_db(timestamp, btc_jpy_price, sum_buy_btc_amount, sum_sell_btc_amount)
                     tx_flg = 0 #break
+                    # 環境変数に今回利用したタイムスタンプを登録する
+                    os.environ['TIMESTAMP'] = str(tsc.return_old_time_stamp())
 
 
     except Exception:
@@ -137,7 +142,7 @@ class APIClass:
             'currency': 'btc'
             }
 
-        time.sleep(15)
+        # time.sleep(15)
         response = requests.get(api_url, params=payload)
 
         return response
