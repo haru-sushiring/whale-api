@@ -106,8 +106,9 @@ def main():
                     os.environ['TIMESTAMP'] = str(tsc.return_old_time_stamp())
 
 
-    except Exception:
+    except Exception as e:
         # エラーが起きたら、LINEに通知する
+        print(e)
         send_line_notify()
 
 
