@@ -72,6 +72,7 @@ def main():
                     timestamp_differ_flg = 1
                     # 環境変数に1つ前のタイムスタンプを登録する
                     os.environ['TIMESTAMP'] = str(tsc.return_old_time_stamp())
+                    print('rewrite timestamp')
 
                     if (sum_buy_btc_amount > 0 or sum_sell_btc_amount > 0):
                         # BTC移動の合計量とBTC価格をdbに登録する
