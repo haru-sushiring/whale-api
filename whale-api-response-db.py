@@ -69,8 +69,8 @@ def main():
 
                 # 一つ前のタイムスタンプが、今配列から取り出したトランザクションのタイムスタンプと違う場合、db登録し、処理終了。ただし、amountがbuy,sell両方0の場合、db登録しない
                 if (tsc.return_old_time_stamp() != new_time_stamp):
-                    #1つ前のタイムスタンプを利用して新しいjsonデータを取得するために、関数に登録しておく
-                    tsc.register_time_stamp(old_time_stamp)
+                    # #1つ前のタイムスタンプを利用して新しいjsonデータを取得するために、関数に登録しておく
+                    # tsc.register_time_stamp(old_time_stamp)
                     timestamp_differ_flg = 1
                     # 環境変数に1つ前のタイムスタンプを登録する
                     os.environ['TIMESTAMP'] = str(tsc.return_old_time_stamp())
