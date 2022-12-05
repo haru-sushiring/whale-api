@@ -151,6 +151,9 @@ class APIClass:
         return response
 
     def whale_api_error_check(whale_api_response):
+        tx_flg = 0
+        print(tx_flg)
+        print(whale_api_response)
         # 500 503 エラーの対策
         if (whale_api_response.status_code == 500 and whale_api_response.status_code == 503):
             print('500 503 error')
