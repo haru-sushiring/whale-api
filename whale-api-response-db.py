@@ -28,8 +28,6 @@ def main():
 
         # whale Alert からトランザクション（json）を取得
         whale_api_response = api.return_whale_api(unix_timestamp)
-        print(whale_api_response)
-        # print(whale_api_response.json())
 
         # トランザクションの有無フラグ
         tx_flg = api.whale_api_error_check(whale_api_response)
@@ -38,12 +36,12 @@ def main():
         # トランザクションがある時に処理を行う。
         timestamp_differ_flg = 0
         while (tx_flg == 1):
-            # 違うタイムスタンプの時、1つ前のタイムスタンプを利用してトランザクションを再取得する
-            if (timestamp_differ_flg == 1):
-                unix_timestamp = tsc.return_old_time_stamp()
-                print('古いタイムスタンプを利用 : ' + str(unix_timestamp))
-                whale_api_response = api.return_whale_api(unix_timestamp)
-                tx_flg = api.whale_api_error_check(whale_api_response)
+            # # 違うタイムスタンプの時、1つ前のタイムスタンプを利用してトランザクションを再取得する
+            # if (timestamp_differ_flg == 1):
+            #     unix_timestamp = tsc.return_old_time_stamp()
+            #     print('古いタイムスタンプを利用 : ' + str(unix_timestamp))
+            #     whale_api_response = api.return_whale_api(unix_timestamp)
+            #     tx_flg = api.whale_api_error_check(whale_api_response)
 
 
             # jsonに値があったら処理を継続する
@@ -152,9 +150,6 @@ class APIClass:
         return response
 
     def whale_api_error_check(self, whale_api_response):
-        tx_flg = 0
-        print(tx_flg)
-        print(whale_api_response)
         # 500 503 エラーの対策
         if (whale_api_response.status_code == 500 and whale_api_response.status_code == 503):
             print('500 503 error')
@@ -184,7 +179,6 @@ class APIClass:
                 print(whale_api_response.json())
                 tx_flg = 0
 
-        print(tx_flg)
         return tx_flg
 
 
