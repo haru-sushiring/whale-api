@@ -28,7 +28,6 @@ def main():
 
         # whale Alert からトランザクション（json）を取得
         whale_api_response = api.return_whale_api(unix_timestamp)
-        print(whale_api_response)
 
         # トランザクションの有無フラグ
         tx_flg = api.whale_api_error_check(whale_api_response)
@@ -112,7 +111,7 @@ def main():
     except Exception as e:
         # エラーが起きたら、LINEに通知する
         print(e)
-        send_line_notify()
+        send_line_notify(e)
 
 
 ### メイン処理　end
@@ -255,9 +254,9 @@ class RegisterDBClass:
 
 
 ###
-def send_line_notify():
+def send_line_notify(error):
     line_notify_token = os.environ['LINE']
-    notification_message = 'whale-api-response-db.py Error'
+    notification_message = 'whale-api-response-db.py : ' + error
     line_notify_api = 'https://notify-api.line.me/api/notify'
     headers = {'Authorization': f'Bearer {line_notify_token}'}
     data = {'message': f'message: {notification_message}'}
