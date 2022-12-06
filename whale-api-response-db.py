@@ -10,7 +10,6 @@ import psycopg2
 # api_key, db_urlの読み込み
 load_dotenv()
 
-
 ### メイン処理 cronで1分おきに処理を行う
 def main():
     try:
@@ -34,16 +33,7 @@ def main():
         print(tx_flg)
 
         # トランザクションがある時に処理を行う。
-        timestamp_differ_flg = 0
         while (tx_flg == 1):
-            # # 違うタイムスタンプの時、1つ前のタイムスタンプを利用してトランザクションを再取得する
-            # if (timestamp_differ_flg == 1):
-            #     unix_timestamp = tsc.return_old_time_stamp()
-            #     print('古いタイムスタンプを利用 : ' + str(unix_timestamp))
-            #     whale_api_response = api.return_whale_api(unix_timestamp)
-            #     tx_flg = api.whale_api_error_check(whale_api_response)
-
-
             # jsonに値があったら処理を継続する
             whale_api_json = whale_api_response.json()
             btc_transactions_count = whale_api_json['count']
@@ -67,15 +57,9 @@ def main():
 
                 # 一つ前のタイムスタンプが、今配列から取り出したトランザクションのタイムスタンプと違う場合、db登録し、処理終了。ただし、amountがbuy,sell両方0の場合、db登録しない
                 if (tsc.return_old_time_stamp() != new_time_stamp):
-                    # #1つ前のタイムスタンプを利用して新しいjsonデータを取得するために、関数に登録しておく
-                    # tsc.register_time_stamp(old_time_stamp)
-                    timestamp_differ_flg = 1
                     # 環境変数に1つ前のタイムスタンプを登録する
-                    os.environ['TIMESTAMP'] = str(tsc.return_old_time_stamp())
-                    print('rewrite timestamp tsc')
-                    print(str(tsc.return_old_time_stamp()))
-                    print('rewrite timestamp os')
-                    print(os.environ['TIMESTAMP'])
+                    previous_timestamp = tsc.return_old_time_stamp()
+                    tsc.update_timestamp(previous_timestamp)
 
                     if (sum_buy_btc_amount > 0 or sum_sell_btc_amount > 0):
                         # BTC移動の合計量とBTC価格をdbに登録する
@@ -107,11 +91,7 @@ def main():
                     rdbc.set_db(timestamp, btc_jpy_price, sum_buy_btc_amount, sum_sell_btc_amount)
                     tx_flg = 0 #break
                     # 環境変数に今回利用したタイムスタンプを登録する
-                    os.environ['TIMESTAMP'] = str(tsc.return_old_time_stamp())
-                    print('rewrite timestamp tsc')
-                    print(str(tsc.return_old_time_stamp()))
-                    print('rewrite timestamp os')
-                    print(os.environ['TIMESTAMP'])
+                    tsc.update_timestamp(timestamp)
 
 
     except Exception as e:
@@ -125,22 +105,39 @@ def main():
 
 ###
 class TimeStampClass:
+    def __init__(self):
+        self.old_time_stamp = 0
 
-  def __init__(self):
-    self.old_time_stamp = 0
+    def new_time_stamp(self):
+        return math.floor(time.time())
 
-  def new_time_stamp(self):
-    return math.floor(time.time())
+    def register_time_stamp(self, new_time_stamp):
+        print('古いタイムスタンプを登録 : ' + str(new_time_stamp))
+        self.old_time_stamp = new_time_stamp
 
-  def register_time_stamp(self, new_time_stamp):
-    print('古いタイムスタンプを登録 : ' + str(new_time_stamp))
-    self.old_time_stamp = new_time_stamp
+    def return_old_time_stamp(self):
+        return self.old_time_stamp
 
-  def return_old_time_stamp(self):
-    return self.old_time_stamp
+    def exchange_time_stamp(self, timestamp):
+        return datetime.datetime.fromtimestamp(timestamp, datetime.timezone(datetime.timedelta(hours=9)))
 
-  def exchange_time_stamp(self, timestamp):
-    return datetime.datetime.fromtimestamp(timestamp, datetime.timezone(datetime.timedelta(hours=9)))
+    def update_timestamp(self, timestamp):
+        # .envのタイムスタンプを更新する
+        file_env = ".env"
+        with open(file_env, encoding="ascii") as f:
+            env_data = f.read()
+
+        # 文字列置換
+        old_unix_timestamp = os.environ['TIMESTAMP']
+        new_unix_timestamp = str(timestamp) #.envなので文字列に変換する
+        env_data = env_data.replace(old_unix_timestamp, new_unix_timestamp)
+
+        # 同じファイル名で保存
+        with open(file_env, mode="w", encoding="ascii") as f:
+            f.write(env_data)
+
+        # 再度.envを読み込む
+        load_dotenv()
 
 
 
@@ -244,8 +241,6 @@ class RegisterDBClass:
         # pass
 
     def db_register(self, timestamp, amount, price, move):
-        # with psycopg2.connect(self.DATABASES_URL) as conn:
-        # with psycopg2.connect(user=self.USER,password=self.PASSWORD,host=self.HOST,port=self.PORT,database=self.DATABASE) as conn:
         with psycopg2.connect(self.postgresql) as conn:
             with conn.cursor() as curs:
                 curs.execute(
