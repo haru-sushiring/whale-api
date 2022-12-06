@@ -47,16 +47,16 @@ def main():
 
             # 同じタイムスタンプのトランザクションがある間、処理を行う
             for transaction in transactions_list:
-                new_time_stamp = transaction['timestamp']
+                tx_time_stamp = transaction['timestamp']
 
                 # 配列の要素が先頭の場合、初期化処理を行う
                 if (transaction == transactions_list[0]):
-                    tsc.register_time_stamp(new_time_stamp)
-                    timestamp = tsc.exchange_time_stamp(new_time_stamp) # タイムスタンプを日本時間に直す
+                    tsc.register_time_stamp(tx_time_stamp)
+                    timestamp = tsc.exchange_time_stamp(tx_time_stamp) # タイムスタンプを日本時間に直す
                     btc_jpy_price = api.return_btc_jpy_price() # BTCの価格を取得する
 
                 # 一つ前のタイムスタンプが、今配列から取り出したトランザクションのタイムスタンプと違う場合、db登録し、処理終了。ただし、amountがbuy,sell両方0の場合、db登録しない
-                if (tsc.return_old_time_stamp() != new_time_stamp):
+                if (tsc.return_old_time_stamp() != tx_time_stamp):
                     # 環境変数に1つ前のタイムスタンプを登録する
                     previous_timestamp = tsc.return_old_time_stamp()
                     tsc.update_timestamp(previous_timestamp)
@@ -91,7 +91,7 @@ def main():
                     rdbc.set_db(timestamp, btc_jpy_price, sum_buy_btc_amount, sum_sell_btc_amount)
                     tx_flg = 0 #break
                     # 環境変数に今回利用したタイムスタンプを登録する
-                    tsc.update_timestamp(timestamp)
+                    tsc.update_timestamp(tx_time_stamp)
 
 
     except Exception as e:
@@ -257,7 +257,7 @@ class RegisterDBClass:
 ###
 def send_line_notify(error):
     line_notify_token = os.environ['LINE']
-    notification_message = 'whale-api-response-db.py : ' + error
+    notification_message = 'whale-api-response-db.py : ' + str(error)
     line_notify_api = 'https://notify-api.line.me/api/notify'
     headers = {'Authorization': f'Bearer {line_notify_token}'}
     data = {'message': f'message: {notification_message}'}
