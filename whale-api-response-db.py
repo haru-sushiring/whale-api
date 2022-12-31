@@ -166,7 +166,7 @@ class APIClass:
             }
 
         # time.sleep(15)
-        response = requests.get(api_url, params=payload)
+        response = requests.get(api_url, params=payload, verify=False)
 
         return response
 
@@ -175,7 +175,7 @@ class APIClass:
         # whale_api_response がjsonかどうか判定
         if 'json' not in r.headers.get('content-type'):
             result = r.text
-            print(result)
+            # print(result)
             tx_flg = 0
             return tx_flg
 
@@ -214,7 +214,7 @@ class APIClass:
 
     def return_btc_jpy_price(self):
         api_url = 'https://api.bitflyer.com/v1/getticker?product_code=BTC_JPY'
-        response = requests.get(api_url , verify=False)
+        response = requests.get(api_url, verify=False)
 
         error_flg = 1
         while (error_flg == 1):
