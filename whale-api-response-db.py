@@ -192,6 +192,7 @@ class APIClass:
 
             case {"result": 'error', "message": error} if r.status_code == 429:
                 print(f"requests error: {error}") #usage limit reached
+                time.sleep(15)
                 tx_flg = 0
 
             case {"result": 'success', "count": count} if count == 0:
