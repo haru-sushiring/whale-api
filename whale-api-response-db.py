@@ -169,6 +169,7 @@ class APIClass:
         return response
 
     def whale_api_error_check(self, whale_api_response):
+        r = whale_api_response
         # whale_api_response がjsonかどうか判定
         if 'json' not in r.headers.get('content-type'):
             result = r.text
@@ -177,17 +178,17 @@ class APIClass:
             return tx_flg
 
         # 500 503 エラーの対策
-        if (whale_api_response.status_code == 500 and whale_api_response.status_code == 503):
+        if (r.status_code == 500 and r.status_code == 503):
             print('500 503 error')
             tx_flg = 0
 
         # 400系エラーの対策、トランザクションカウントのチェック処理
-        match whale_api_response.json():
-            case {"result": 'error', "message": error} if whale_api_response.status_code == 400:
+        match r.json():
+            case {"result": 'error', "message": error} if r.status_code == 400:
                 print(f"timestamp error!: {error}") #value out of range for start parameter. For the Free plan the maximum transaction history is 3600 seconds
                 tx_flg = 2
 
-            case {"result": 'error', "message": error} if whale_api_response.status_code == 429:
+            case {"result": 'error', "message": error} if r.status_code == 429:
                 print(f"requests error: {error}") #usage limit reached
                 tx_flg = 0
 
@@ -201,8 +202,8 @@ class APIClass:
 
             case _:
                 print('不明なエラー jsonが取得できませんでした')
-                print(whale_api_response)
-                print(whale_api_response.json())
+                print(r)
+                print(r.json())
                 tx_flg = 0
 
         return tx_flg
