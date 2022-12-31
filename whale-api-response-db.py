@@ -32,6 +32,15 @@ def main():
         tx_flg = api.whale_api_error_check(whale_api_response)
         print(tx_flg)
 
+        # value out of range for start parameter.の場合
+        if (tx_flg == 2):
+            # 新しいタイムスタンプを作成し、.envに登録する
+            unix_timestamp = tsc.new_time_stamp()
+            tsc.update_timestamp(unix_timestamp)
+
+        # # トランザクションが100件だった場合、タイムスタンプに関係なく、全て値を調べる
+        # tx_count = 0
+
         # トランザクションがある時に処理を行う。
         while (tx_flg == 1):
             # jsonに値があったら処理を継続する
@@ -55,20 +64,20 @@ def main():
                     timestamp = tsc.exchange_time_stamp(tx_time_stamp) # タイムスタンプを日本時間に直す
                     btc_jpy_price = api.return_btc_jpy_price() # BTCの価格を取得する
 
-                # 一つ前のタイムスタンプが、今配列から取り出したトランザクションのタイムスタンプと違う場合、db登録し、処理終了。ただし、amountがbuy,sell両方0の場合、db登録しない
-                if (tsc.return_old_time_stamp() != tx_time_stamp):
-                    # 環境変数に1つ前のタイムスタンプを登録する
-                    previous_timestamp = tsc.return_old_time_stamp()
-                    tsc.update_timestamp(previous_timestamp)
+                # # 一つ前のタイムスタンプが、今配列から取り出したトランザクションのタイムスタンプと違う場合、db登録し、処理終了。ただし、amountがbuy,sell両方0の場合、db登録しない
+                # if (tsc.return_old_time_stamp() != tx_time_stamp):
+                #     # 環境変数に1つ前のタイムスタンプを登録する
+                #     previous_timestamp = tsc.return_old_time_stamp()
+                #     tsc.update_timestamp(previous_timestamp)
 
-                    if (sum_buy_btc_amount > 0 or sum_sell_btc_amount > 0):
-                        # BTC移動の合計量とBTC価格をdbに登録する
-                        rdbc.set_db(timestamp, btc_jpy_price, sum_buy_btc_amount, sum_sell_btc_amount)
-                        tx_flg = 0
-                        break
-                    else:
-                        tx_flg = 0
-                        break
+                #     if (sum_buy_btc_amount > 0 or sum_sell_btc_amount > 0):
+                #         # BTC移動の合計量とBTC価格をdbに登録する
+                #         rdbc.set_db(timestamp, btc_jpy_price, sum_buy_btc_amount, sum_sell_btc_amount)
+                #         tx_flg = 0
+                #         break
+                #     else:
+                #         tx_flg = 0
+                #         break
 
 
                 btc_id = transaction['id']
@@ -169,7 +178,7 @@ class APIClass:
         match whale_api_response.json():
             case {"result": 'error', "message": error} if whale_api_response.status_code == 400:
                 print(f"timestamp error!: {error}") #value out of range for start parameter. For the Free plan the maximum transaction history is 3600 seconds
-                tx_flg = 0
+                tx_flg = 2
 
             case {"result": 'error', "message": error} if whale_api_response.status_code == 429:
                 print(f"requests error: {error}") #usage limit reached
