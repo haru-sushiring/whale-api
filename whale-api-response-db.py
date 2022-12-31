@@ -169,6 +169,13 @@ class APIClass:
         return response
 
     def whale_api_error_check(self, whale_api_response):
+        # whale_api_response がjsonかどうか判定
+        if 'json' not in r.headers.get('content-type'):
+            result = r.text
+            print(result)
+            tx_flg = 0
+            return tx_flg
+
         # 500 503 エラーの対策
         if (whale_api_response.status_code == 500 and whale_api_response.status_code == 503):
             print('500 503 error')
