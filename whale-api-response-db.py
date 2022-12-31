@@ -19,9 +19,9 @@ def main():
         tsc = TimeStampClass()
         rdbc = RegisterDBClass()
 
-        unix_timestamp = '1672464413'
+        # unix_timestamp = '1672464413'
         # unix_timestamp = tsc.new_time_stamp()
-        # unix_timestamp = os.environ['TIMESTAMP']
+        unix_timestamp = os.environ['TIMESTAMP']
         tsc.register_time_stamp(unix_timestamp)
         print(unix_timestamp)
 
