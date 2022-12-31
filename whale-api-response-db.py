@@ -98,6 +98,9 @@ def main():
         # エラーが起きたら、LINEに通知する
         print(e)
         send_line_notify(e)
+        # 新しいタイムスタンプを作成し、.envに登録する
+        unix_timestamp = tsc.new_time_stamp()
+        tsc.update_timestamp(unix_timestamp)
 
 
 ### メイン処理　end
