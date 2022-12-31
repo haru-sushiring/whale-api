@@ -97,10 +97,12 @@ def main():
 
                 # 配列の要素が最後の場合（配列の中身がすべて同じタイムスタンプだった場合）db登録
                 if (transaction == transactions_list[-1]):
-                    rdbc.set_db(timestamp, btc_jpy_price, sum_buy_btc_amount, sum_sell_btc_amount)
-                    tx_flg = 0 #break
-                    # 環境変数に今回利用したタイムスタンプを登録する
-                    tsc.update_timestamp(tx_time_stamp)
+                    # ただし、amountがbuy,sell両方0の場合、db登録しない
+                    if (sum_buy_btc_amount > 0 or sum_sell_btc_amount > 0):
+                        rdbc.set_db(timestamp, btc_jpy_price, sum_buy_btc_amount, sum_sell_btc_amount)
+                        tx_flg = 0 #break
+                        # 環境変数に今回利用したタイムスタンプを登録する
+                        tsc.update_timestamp(tx_time_stamp)
 
 
     except Exception as e:
