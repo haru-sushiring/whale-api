@@ -214,7 +214,7 @@ class APIClass:
 
     def return_btc_jpy_price(self):
         api_url = 'https://api.bitflyer.com/v1/getticker?product_code=BTC_JPY'
-        response = requests.get(api_url)
+        response = requests.get(api_url , verify=False)
 
         error_flg = 1
         while (error_flg == 1):
