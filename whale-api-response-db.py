@@ -7,6 +7,10 @@ import os
 from dotenv import load_dotenv
 import psycopg2
 
+import urllib3
+from urllib3.exceptions import InsecureRequestWarning
+urllib3.disable_warnings(InsecureRequestWarning)
+
 # api_key, db_urlの読み込み
 load_dotenv()
 
