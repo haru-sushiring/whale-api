@@ -7,6 +7,7 @@ import os
 from dotenv import load_dotenv
 import psycopg2
 
+# api警告対策
 import urllib3
 from urllib3.exceptions import InsecureRequestWarning
 urllib3.disable_warnings(InsecureRequestWarning)
@@ -14,7 +15,7 @@ urllib3.disable_warnings(InsecureRequestWarning)
 # api_key, db_urlの読み込み
 load_dotenv()
 
-### メイン処理 cronで1分おきに処理を行う
+### メイン処理 cronで2分おきに処理を行う
 def main():
     try:
         #　インスタンス
@@ -41,24 +42,18 @@ def main():
             # 新しいタイムスタンプを作成し、.envに登録する
             unix_timestamp = tsc.new_time_stamp()
             tsc.update_timestamp(unix_timestamp)
+            print('3600 timeout, new_time_stamp : ' + str(os.environ['TIMESTAMP']))
 
-        # # トランザクションが100件だった場合、タイムスタンプに関係なく、全て値を調べる
-        # tx_count = 0
 
         # トランザクションがある時に処理を行う。
-        while (tx_flg == 1):
+        if (tx_flg == 1):
             # jsonに値があったら処理を継続する
             whale_api_json = whale_api_response.json()
             btc_transactions_count = whale_api_json['count']
             print('count : ' + str(btc_transactions_count))
 
-
-            # 同じタイムスタンプのトランザクションの値を処理する
-            sum_buy_btc_amount = 0
-            sum_sell_btc_amount = 0
+            # トランザクションがある間、処理を行う
             transactions_list = whale_api_json['transactions']
-
-            # 同じタイムスタンプのトランザクションがある間、処理を行う
             for transaction in transactions_list:
                 tx_time_stamp = transaction['timestamp']
 
@@ -67,22 +62,8 @@ def main():
                     tsc.register_time_stamp(tx_time_stamp)
                     timestamp = tsc.exchange_time_stamp(tx_time_stamp) # タイムスタンプを日本時間に直す
                     btc_jpy_price = api.return_btc_jpy_price() # BTCの価格を取得する
-
-                # # 一つ前のタイムスタンプが、今配列から取り出したトランザクションのタイムスタンプと違う場合、db登録し、処理終了。ただし、amountがbuy,sell両方0の場合、db登録しない
-                # if (tsc.return_old_time_stamp() != tx_time_stamp):
-                #     # 環境変数に1つ前のタイムスタンプを登録する
-                #     previous_timestamp = tsc.return_old_time_stamp()
-                #     tsc.update_timestamp(previous_timestamp)
-
-                #     if (sum_buy_btc_amount > 0 or sum_sell_btc_amount > 0):
-                #         # BTC移動の合計量とBTC価格をdbに登録する
-                #         rdbc.set_db(timestamp, btc_jpy_price, sum_buy_btc_amount, sum_sell_btc_amount)
-                #         tx_flg = 0
-                #         break
-                #     else:
-                #         tx_flg = 0
-                #         break
-
+                    sum_buy_btc_amount = 0
+                    sum_sell_btc_amount = 0
 
                 btc_id = transaction['id']
                 btc_from = transaction['from']['owner_type']
@@ -99,13 +80,12 @@ def main():
                     sum_sell_btc_amount += btc_amount
                     print(sum_sell_btc_amount)
 
-                # 配列の要素が最後の場合（配列の中身がすべて同じタイムスタンプだった場合）db登録
+                # 配列の要素が最後の時、db登録
                 if (transaction == transactions_list[-1]):
                     # ただし、amountがbuy,sell両方0の場合、db登録しない
                     if (sum_buy_btc_amount > 0 or sum_sell_btc_amount > 0):
                         rdbc.set_db(timestamp, btc_jpy_price, sum_buy_btc_amount, sum_sell_btc_amount)
-                        tx_flg = 0 #break
-                        # 環境変数に今回利用したタイムスタンプを登録する
+                        # 環境変数に配列最後のタイムスタンプを登録する
                         tsc.update_timestamp(tx_time_stamp)
 
 
@@ -174,19 +154,19 @@ class APIClass:
 
         return response
 
+
     def whale_api_error_check(self, whale_api_response):
+        tx_flg = 0
         r = whale_api_response
-        # whale_api_response がjsonかどうか判定
+
+        # whale_api_response がjsonでは無い場合、処理終了
         if 'json' not in r.headers.get('content-type'):
-            result = r.text
-            # print(result)
-            tx_flg = 0
             return tx_flg
 
         # 500 503 エラーの対策
         if (r.status_code == 500 and r.status_code == 503):
             print('500 503 error')
-            tx_flg = 0
+            return tx_flg
 
         # 400系エラーの対策、トランザクションカウントのチェック処理
         match r.json():
@@ -197,11 +177,9 @@ class APIClass:
             case {"result": 'error', "message": error} if r.status_code == 429:
                 print(f"requests error: {error}") #usage limit reached
                 time.sleep(15)
-                tx_flg = 0
 
             case {"result": 'success', "count": count} if count == 0:
                 print('count : 0')
-                tx_flg = 0
 
             case {"result": 'success', "count": count} if count > 0:
                 # print('トランザクションが1個以上ある')
@@ -211,7 +189,6 @@ class APIClass:
                 print('不明なエラー jsonが取得できませんでした')
                 print(r)
                 print(r.json())
-                tx_flg = 0
 
         return tx_flg
 
