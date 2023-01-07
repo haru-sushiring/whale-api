@@ -80,13 +80,14 @@ def main():
                     sum_sell_btc_amount += btc_amount
                     print(sum_sell_btc_amount)
 
-                # 配列の要素が最後の時、db登録
+                # 配列の要素が最後の時、db登録とタイムスタンプ登録をする
                 if (transaction == transactions_list[-1]):
                     # ただし、amountがbuy,sell両方0の場合、db登録しない
                     if (sum_buy_btc_amount > 0 or sum_sell_btc_amount > 0):
                         rdbc.set_db(timestamp, btc_jpy_price, sum_buy_btc_amount, sum_sell_btc_amount)
-                        # 環境変数に配列最後のタイムスタンプを登録する
-                        tsc.update_timestamp(tx_time_stamp)
+
+                    # 環境変数に配列最後のタイムスタンプを登録する
+                    tsc.update_timestamp(tx_time_stamp)
 
 
     except Exception as e:
