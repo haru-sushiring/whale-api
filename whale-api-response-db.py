@@ -42,7 +42,7 @@ def main():
             # 新しいタイムスタンプを作成し、.envに登録する
             unix_timestamp = tsc.new_time_stamp()
             tsc.update_timestamp(unix_timestamp)
-            print('3600 timeout, new_time_stamp : ' + str(os.environ['TIMESTAMP']))
+            print('3600 timeout or json error, new_time_stamp : ' + str(os.environ['TIMESTAMP']))
 
 
         # トランザクションがある時に処理を行う。
