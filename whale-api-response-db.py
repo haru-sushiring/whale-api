@@ -173,15 +173,24 @@ class APIClass:
             print('500 503 error')
             return tx_flg
 
-        # 400系エラーの対策、トランザクションカウントのチェック処理
-        match r.json():
-            case {"result": 'error', "message": error} if r.status_code == 400:
-                print(f"timestamp error!: {error}") #value out of range for start parameter. For the Free plan the maximum transaction history is 3600 seconds
-                tx_flg = 3
+        # 400エラー（3600秒経過エラー）
+        if (r.status_code == 400):
+            print(r.text) #value out of range for start parameter. For the Free plan the maximum transaction history is 3600 seconds
+            tx_flg = 3
 
-            case {"result": 'error', "message": error} if r.status_code == 429:
-                print(f"requests error: {error}") #usage limit reached
-                time.sleep(15)
+        # 429エラー（1分間のapiの呼び出し回数を超過エラー）
+        if (r.status_code == 429):
+            print(r.text) #usage limit reached
+            time.sleep(15)
+
+        # トランザクションカウントのチェック処理
+        match r.json():
+            # case {"result": 'error', "message": error} if r.status_code == 400:
+            #     print(f"timestamp error!: {error}") #value out of range for start parameter. For the Free plan the maximum transaction history is 3600 seconds
+
+            # case {"result": 'error', "message": error} if r.status_code == 429:
+            #     print(f"requests error: {error}") #usage limit reached
+            #     time.sleep(15)
 
             case {"result": 'success', "count": count} if count == 0:
                 print('count : 0')
