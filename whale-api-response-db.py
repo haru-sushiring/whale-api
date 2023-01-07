@@ -37,8 +37,8 @@ def main():
         tx_flg = api.whale_api_error_check(whale_api_response)
         print(tx_flg)
 
-        # value out of range for start parameter.の場合
-        if (tx_flg == 2):
+        # 3600秒タイムスタンプエラーと、whale_api not jsonの場合
+        if (tx_flg == 2 or tx_flg == 3):
             # 新しいタイムスタンプを作成し、.envに登録する
             unix_timestamp = tsc.new_time_stamp()
             tsc.update_timestamp(unix_timestamp)
@@ -162,7 +162,10 @@ class APIClass:
 
         # whale_api_response がjsonでは無い場合、処理終了
         if 'json' not in r.headers.get('content-type'):
+            print(r)
+            print(r.text)
             print('whale_api not json')
+            tx_flg = 2
             return tx_flg
 
         # 500 503 エラーの対策
@@ -174,12 +177,11 @@ class APIClass:
         match r.json():
             case {"result": 'error', "message": error} if r.status_code == 400:
                 print(f"timestamp error!: {error}") #value out of range for start parameter. For the Free plan the maximum transaction history is 3600 seconds
-                tx_flg = 2
+                tx_flg = 3
 
             case {"result": 'error', "message": error} if r.status_code == 429:
                 print(f"requests error: {error}") #usage limit reached
                 time.sleep(15)
-                tx_flg = 3
 
             case {"result": 'success', "count": count} if count == 0:
                 print('count : 0')
