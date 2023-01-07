@@ -162,6 +162,7 @@ class APIClass:
 
         # whale_api_response がjsonでは無い場合、処理終了
         if 'json' not in r.headers.get('content-type'):
+            print('whale_api not json')
             return tx_flg
 
         # 500 503 エラーの対策
@@ -178,6 +179,7 @@ class APIClass:
             case {"result": 'error', "message": error} if r.status_code == 429:
                 print(f"requests error: {error}") #usage limit reached
                 time.sleep(15)
+                tx_flg = 3
 
             case {"result": 'success', "count": count} if count == 0:
                 print('count : 0')
